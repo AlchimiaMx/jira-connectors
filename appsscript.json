@@ -1,0 +1,17 @@
+{
+  "timeZone": "America/Mexico_City",
+  "dataStudio": {
+    "name": "Jira Connectors",
+    "logoUrl": "https://sistemas.inbox.mx/recursos/alchimia/alchimia_v_1.png",
+    "company": "ALCHIMIA",
+    "companyUrl": "https://alchimia.mx",
+    "addonUrl": "https://github.com/AlchimiaMx/jira-connectors/tree/master#readme",
+    "supportUrl": "https://github.com/AlchimiaMx/jira-connectors/issues",
+    "description": "Jira Content for Google Data Studio.",
+    "sources": [
+      "Alchimia",
+      "Jira",
+      "Atlassian"
+    ]
+  }
+}
