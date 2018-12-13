@@ -78,8 +78,11 @@ function getConfig() {
   config.newTextInput()
     .setId('JQL')
     .setName('Jira Query Language (JQL)')
-    .setHelpText('For more information consult https://confluence.atlassian.com/jiracoreserver/advanced-searching-939937709.html?_ga=2.120070472.1524126525.1544574940-1266246199.1525106444')
     .setPlaceholder('project = NAME');
+
+  config.newInfo()
+    .setId('moreInfo')
+    .setText('For more information consult https://github.com/AlchimiaMx/jira-connectors/tree/master#readme')
 
   config.setDateRangeRequired(true);
 
