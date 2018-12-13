@@ -28,7 +28,11 @@ var fieldsDictionary = {
   'project': 'project',
   'satisfaction': 'customfield_10204',
   'timespent': 'aggregatetimespent',
-  'issues': ''
+  'issues': '',
+  'timeFirstResponse': 'customfield_10208',
+  'breachedFirstResponse': 'customfield_10208',
+  'timeResolution': 'customfield_10207',
+  'breachedtimeResolution': 'customfield_10207'
 }
 
 /**
@@ -188,6 +192,30 @@ function getFields() {
     .setAggregation(aggregations.SUM);
 
   fields.newMetric()
+    .setId('timeFirstResponse')
+    .setName('Time to First Response')
+    .setType(types.NUMBER)
+    .setAggregation(aggregations.AVG);
+
+  fields.newMetric()
+    .setId('timeResolution')
+    .setName('Time to Resolution')
+    .setType(types.NUMBER)
+    .setAggregation(aggregations.AVG);
+
+  fields.newMetric()
+    .setId('breachedFirstResponse')
+    .setName('Breached First Response')
+    .setType(types.BOOLEAN)
+    .setAggregation(aggregations.COUNT);
+
+  fields.newMetric()
+    .setId('breachedtimeResolution')
+    .setName('Breached Time Resolution')
+    .setType(types.BOOLEAN)
+    .setAggregation(aggregations.COUNT);
+
+  fields.newMetric()
     .setId('issues')
     .setName('Issues')
     .setType(types.NUMBER)
@@ -267,10 +295,22 @@ function responseToRows(requestedFields, issues) {
           row.push(issue.fields.customfield_10204? issue.fields.customfield_10204.rating : undefined);
           break;
         case 'timespent':
-          row.push(issue.fields.aggregatetimespent? issue.fields.aggregatetimespent/60: undefined);
+          row.push(issue.fields.aggregatetimespent? issue.fields.aggregatetimespent: undefined);
           break;
         case 'issues':
           row.push(1);
+          break;
+        case 'timeFirstResponse':
+          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].elapsedTime.millis: undefined: undefined );
+          break;
+        case 'breachedFirstResponse':
+          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].breached: undefined: undefined );
+          break;
+        case 'timeResolution':
+          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].elapsedTime.millis: undefined: undefined );
+          break;
+        case 'breachedtimeResolution':
+          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].breached: undefined: undefined );
           break;
         default:
           row.push('');
@@ -342,7 +382,6 @@ function getData(request) {
 
   try {
     var responseFullIssues = getFullIssuesByAPI(fieldsToRequest, request, 0, []);
-    console.log(responseFullIssues)
   } catch (e) {
     connector.throwError(e, true);
   }

@@ -35,6 +35,10 @@ You can try out the managed deployment of the latest code: [Jira Conectors for A
 * project
 * satisfaction (customfield_10204)
 * aggregatetimespent
+* time to first response
+* breached first response
+* time to resolution
+* breached time resolution
 
 [jira software]: https://www.atlassian.com/software/jira
 [rest api jira]: https://developer.atlassian.com/cloud/jira/platform/rest/v2/
