@@ -203,17 +203,15 @@ function getFields() {
     .setType(types.NUMBER)
     .setAggregation(aggregations.AVG);
 
-  fields.newMetric()
+  fields.newDimension()
     .setId('breachedFirstResponse')
     .setName('Breached First Response')
-    .setType(types.BOOLEAN)
-    .setAggregation(aggregations.COUNT);
+    .setType(types.BOOLEAN);
 
-  fields.newMetric()
+  fields.newDimension()
     .setId('breachedtimeResolution')
     .setName('Breached Time Resolution')
-    .setType(types.BOOLEAN)
-    .setAggregation(aggregations.COUNT);
+    .setType(types.BOOLEAN);
 
   fields.newMetric()
     .setId('issues')
