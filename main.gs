@@ -330,7 +330,7 @@ function responseToRows(requestedFields, issues) {
 function getFullIssuesByAPI(fieldsToRequest, request, startIssues, accumulated){
   var maxResults = 100;
   var data = {
-    'jql': 'created >= "' + request.dateRange.startDate + '" AND created <= "' + request.dateRange.endDate + '" AND ' + request.configParams.JQL,
+    'jql': 'created >= "' + request.dateRange.startDate + '" AND created <= "' + request.dateRange.endDate + ' 23:59" AND ' + request.configParams.JQL,
     'maxResults': maxResults,
     'startAt': startIssues,
     'fields': fieldsToRequest
