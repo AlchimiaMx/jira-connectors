@@ -19,6 +19,7 @@ var fieldsDictionary = {
   'reporter': 'reporter',
   'priority': 'priority',
   'status': 'status',
+  'statusName': 'status',
   'created': 'created',
   'duedate': 'duedate',
   'resolutiondate': 'resolutiondate',
@@ -32,7 +33,13 @@ var fieldsDictionary = {
   'timeFirstResponse': 'customfield_10208',
   'breachedFirstResponse': 'customfield_10208',
   'timeResolution': 'customfield_10207',
-  'breachedtimeResolution': 'customfield_10207'
+  'breachedtimeResolution': 'customfield_10207',
+  'changeSatartDate': 'customfield_10214',
+  'changeCompletionDate': 'customfield_10215',
+  'createdDayOfWeek': 'created',
+  'createdHour': 'created',
+  'resolutiondateDayOfWeek': 'resolutiondate',
+  'resolutiondateHour': 'resolutiondate'
 }
 
 /**
@@ -145,9 +152,24 @@ function getFields() {
     .setType(types.TEXT);
   
   fields.newDimension()
+    .setId('statusName')
+    .setName('Status Name')
+    .setType(types.TEXT);
+  
+  fields.newDimension()
     .setId('created')
     .setName('Created')
     .setType(types.YEAR_MONTH_DAY);
+  
+  fields.newDimension()
+    .setId('createdDayOfWeek')
+    .setName('Created (day of week)')
+    .setType(types.DAY_OF_WEEK);
+  
+  fields.newDimension()
+    .setId('createdHour')
+    .setName('Created (hour)')
+    .setType(types.HOUR);
   
   fields.newDimension()
     .setId('duedate')
@@ -157,6 +179,27 @@ function getFields() {
   fields.newDimension()
     .setId('resolutiondate')
     .setName('Resolution Date')
+    .setType(types.YEAR_MONTH_DAY);
+  
+  fields.newDimension()
+    .setId('resolutiondateDayOfWeek')
+    .setName('Resolution Date (day of week)')
+    .setType(types.DAY_OF_WEEK);
+  
+  fields.newDimension()
+    .setId('resolutiondateHour')
+    .setName('Resolution Date (hour)')
+    .setType(types.HOUR);
+  
+
+  fields.newDimension()
+    .setId('changeSatartDate')
+    .setName('Change Start Date')
+    .setType(types.YEAR_MONTH_DAY);
+
+  fields.newDimension()
+    .setId('changeCompletionDate')
+    .setName('Change Completion Date')
     .setType(types.YEAR_MONTH_DAY);
 
   fields.newDimension()
@@ -187,20 +230,20 @@ function getFields() {
 
   fields.newMetric()
     .setId('timespent')
-    .setName('Time Spent')
-    .setType(types.NUMBER)
+    .setName('Time Spent (s)')
+    .setType(types.DURATION)
     .setAggregation(aggregations.SUM);
 
   fields.newMetric()
     .setId('timeFirstResponse')
-    .setName('Time to First Response')
-    .setType(types.NUMBER)
+    .setName('Time to First Response (s)')
+    .setType(types.DURATION)
     .setAggregation(aggregations.AVG);
 
   fields.newMetric()
     .setId('timeResolution')
-    .setName('Time to Resolution')
-    .setType(types.NUMBER)
+    .setName('Time to Resolution (s)')
+    .setType(types.DURATION)
     .setAggregation(aggregations.AVG);
 
   fields.newDimension()
@@ -230,6 +273,18 @@ function getFields() {
  */
 function getSchema(request) {
   return { schema: getFields().build() };
+}
+
+/**
+ * Returns Date format according to the Time Zone Script
+ *
+ * @param {String} date date in UTC
+ * @param {String} format desired date format
+ * @returns {String} date in new format
+ */
+function formatTypeDate(data, format) {
+  var result = Utilities.formatDate(new Date(data), Session.getScriptTimeZone(), format || "yyyyMMdd")
+  return ( format == 'u' && result == '7' ) ? '0': result
 }
 
 /**
@@ -268,14 +323,29 @@ function responseToRows(requestedFields, issues) {
         case 'status':
           row.push(issue.fields.status? issue.fields.status.statusCategory.name : undefined);
           break;
+        case 'statusName':
+          row.push(issue.fields.status? issue.fields.status.name : undefined);
+          break;
         case 'created':
-          row.push(issue.fields.created? issue.fields.created.split('T')[0].replace(/-/g, '') : undefined);
+          row.push(issue.fields.created? formatTypeDate(issue.fields.created) : undefined);
+          break;
+        case 'createdDayOfWeek':
+          row.push(issue.fields.created? formatTypeDate(issue.fields.created, 'u') : undefined);
+          break;
+        case 'createdHour':
+          row.push(issue.fields.created? formatTypeDate(issue.fields.created, 'HH') : undefined);
           break;
         case 'duedate':
-          row.push(issue.fields.duedate? issue.fields.duedate.split('T')[0].replace(/-/g, '') : undefined);
+          row.push(issue.fields.duedate? formatTypeDate(issue.fields.duedate) : undefined);
           break;
         case 'resolutiondate':
-          row.push(issue.fields.resolutiondate? issue.fields.resolutiondate.split('T')[0].replace(/-/g, '') : undefined);
+          row.push(issue.fields.resolutiondate? formatTypeDate(issue.fields.resolutiondate) : undefined);
+          break;
+        case 'resolutiondateDayOfWeek':
+          row.push(issue.fields.resolutiondate? formatTypeDate(issue.fields.resolutiondate, 'u') : undefined);
+          break;
+        case 'resolutiondateHour':
+          row.push(issue.fields.resolutiondate? formatTypeDate(issue.fields.resolutiondate, 'HH') : undefined);
           break;
         case 'component':
           row.push(issue.fields.components[0]? issue.fields.components[0].name: '');
@@ -293,19 +363,25 @@ function responseToRows(requestedFields, issues) {
           row.push(issue.fields.customfield_10204? issue.fields.customfield_10204.rating : undefined);
           break;
         case 'timespent':
-          row.push(issue.fields.aggregatetimespent? issue.fields.aggregatetimespent: undefined);
+          row.push(issue.fields.aggregatetimespent? issue.fields.aggregatetimespent + '': undefined);
           break;
         case 'issues':
           row.push(1);
           break;
         case 'timeFirstResponse':
-          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].elapsedTime.millis: undefined: undefined );
+          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  (Math.round(issue.fields.customfield_10208.completedCycles[0].elapsedTime.millis/1000)) +'': undefined: undefined );
           break;
         case 'breachedFirstResponse':
           row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].breached: undefined: undefined );
           break;
         case 'timeResolution':
-          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].elapsedTime.millis: undefined: undefined );
+          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  (Math.round(issue.fields.customfield_10207.completedCycles[0].elapsedTime.millis/1000)) +'' : undefined: undefined );
+          break;
+        case 'changeSatartDate':
+          row.push(issue.fields.customfield_10214? formatTypeDate(issue.fields.customfield_10214): undefined);
+          break;
+        case 'changeCompletionDate':
+          row.push(issue.fields.customfield_10215? formatTypeDate(issue.fields.customfield_10215): undefined);
           break;
         case 'breachedtimeResolution':
           row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].breached: undefined: undefined );
@@ -374,8 +450,11 @@ function getData(request) {
     return field.name;
   });
   var requestedFields = getFields().forIds(requestedFieldIds);
-  var fieldsToRequest = requestedFields.asArray().map(function (field) {
-    return fieldsDictionary[field.getId()]
+  var fieldsToRequest = []
+  requestedFields.asArray().forEach(function (field) {
+    if ( fieldsToRequest.indexOf( fieldsDictionary[field.getId()] == -1 ) ) {
+      fieldsToRequest.push(fieldsDictionary[field.getId()])
+    }
   })
 
   try {
