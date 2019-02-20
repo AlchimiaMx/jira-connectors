@@ -76,7 +76,7 @@ function getConfig() {
     .setId('Token')
     .setName('API Token')
     .setHelpText('Go to API tokens in manage your account in Jira');
-  
+
   config.newTextInput()
     .setId('Subdomain')
     .setName('Subdomain Jira Cloud')
@@ -109,7 +109,6 @@ function getFields() {
   var cc = DataStudioApp.createCommunityConnector();
   var fields = cc.getFields();
   var types = cc.FieldType;
-  var aggregations = cc.AggregationType;
 
   fields.newDimension()
     .setId('keys')
@@ -130,7 +129,7 @@ function getFields() {
     .setId('creator')
     .setName('Creator')
     .setType(types.TEXT);
-  
+
   fields.newDimension()
     .setId('assignee')
     .setName('Assignee')
@@ -140,7 +139,7 @@ function getFields() {
     .setId('reporter')
     .setName('Reporter')
     .setType(types.TEXT);
-  
+
   fields.newDimension()
     .setId('priority')
     .setName('Priority')
@@ -150,47 +149,47 @@ function getFields() {
     .setId('status')
     .setName('Status')
     .setType(types.TEXT);
-  
+
   fields.newDimension()
     .setId('statusName')
     .setName('Status Name')
     .setType(types.TEXT);
-  
+
   fields.newDimension()
     .setId('created')
     .setName('Created')
     .setType(types.YEAR_MONTH_DAY);
-  
+
   fields.newDimension()
     .setId('createdDayOfWeek')
     .setName('Created (day of week)')
     .setType(types.DAY_OF_WEEK);
-  
+
   fields.newDimension()
     .setId('createdHour')
     .setName('Created (hour)')
     .setType(types.HOUR);
-  
+
   fields.newDimension()
     .setId('duedate')
     .setName('Due Date')
     .setType(types.YEAR_MONTH_DAY);
-  
+
   fields.newDimension()
     .setId('resolutiondate')
     .setName('Resolution Date')
     .setType(types.YEAR_MONTH_DAY);
-  
+
   fields.newDimension()
     .setId('resolutiondateDayOfWeek')
     .setName('Resolution Date (day of week)')
     .setType(types.DAY_OF_WEEK);
-  
+
   fields.newDimension()
     .setId('resolutiondateHour')
     .setName('Resolution Date (hour)')
     .setType(types.HOUR);
-  
+
 
   fields.newDimension()
     .setId('changeSatartDate')
@@ -216,7 +215,7 @@ function getFields() {
   //   .setId('epic')
   //   .setName('Epic')
   //   .setType(types.TEXT);
-  
+
   fields.newDimension()
     .setId('project')
     .setName('Project')
@@ -225,26 +224,22 @@ function getFields() {
   fields.newMetric()
     .setId('satisfaction')
     .setName('Satisfaction')
-    .setType(types.NUMBER)
-    .setAggregation(aggregations.AVG);
+    .setType(types.NUMBER);
 
   fields.newMetric()
     .setId('timespent')
     .setName('Time Spent (s)')
-    .setType(types.DURATION)
-    .setAggregation(aggregations.SUM);
+    .setType(types.DURATION);
 
   fields.newMetric()
     .setId('timeFirstResponse')
     .setName('Time to First Response (s)')
-    .setType(types.DURATION)
-    .setAggregation(aggregations.AVG);
+    .setType(types.DURATION);
 
   fields.newMetric()
     .setId('timeResolution')
     .setName('Time to Resolution (s)')
-    .setType(types.DURATION)
-    .setAggregation(aggregations.AVG);
+    .setType(types.DURATION);
 
   fields.newDimension()
     .setId('breachedFirstResponse')
@@ -259,8 +254,7 @@ function getFields() {
   fields.newMetric()
     .setId('issues')
     .setName('Issues')
-    .setType(types.NUMBER)
-    .setAggregation(aggregations.SUM);
+    .setType(types.NUMBER);
 
   return fields;
 }
@@ -397,7 +391,7 @@ function responseToRows(requestedFields, issues) {
 /**
  * iterates to evade the query limit
  *
- * @param {Array} fieldsToRequest array of fields for consultation 
+ * @param {Array} fieldsToRequest array of fields for consultation
  * @param {Object} configParams config request parameters
  * @param {Number} startIssues start of issues to consult
  * @param {Array} accumulated cumulative issues of the query
