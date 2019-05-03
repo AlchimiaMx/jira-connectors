@@ -345,7 +345,7 @@ function responseToRows(requestedFields, issues) {
           row.push(issue.fields.components[0]? issue.fields.components[0].name: '');
           break;
         case 'label':
-          row.push(issue.fields.labels[0]? issue.fields.labels[0]: '');
+          row.push(issue.fields.labels? issue.fields.labels.join(): '');
           break;
         // case 'epic':
         //   row.push(issue.fields.labels[0]? issue.fields.labels[0]: '');
