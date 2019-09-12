@@ -8,6 +8,9 @@ This [Data Studio][data studio] conector let users consult [Jira Software][jira 
 
 You can try out the managed deployment of the latest code: [Jira Conectors for Alchimia][production deployment]
 
+> Remember that to use this connector you must have read access to the project in Apps Script, open the following link with your Google account with which you intend to use the connector [Jira_report Apps Script](https://script.google.com/d/1IePZttHarA0VenyWJmWL-wQoPKlQvJ1uBkgfiRB_va2lPH-GVtCngkuH/edit?usp=sharing).
+For more information, you can consult the [community connector guide](https://developers.google.com/datastudio/connector/use).
+
 ### Connector configurations
 
 | Text Field                     | Response                                                              |
