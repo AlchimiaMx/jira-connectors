@@ -39,7 +39,13 @@ var fieldsDictionary = {
   'createdDayOfWeek': 'created',
   'createdHour': 'created',
   'resolutiondateDayOfWeek': 'resolutiondate',
-  'resolutiondateHour': 'resolutiondate'
+  'resolutiondateHour': 'resolutiondate',
+  'parent_key': 'parent',
+  'parent_summary': 'parent',
+  'parent_status': 'parent',
+  'parent_status_name': 'parent',
+  'parent_priority' : 'parent',
+  'parent_issuetype': 'parent'
 }
 
 /**
@@ -256,6 +262,37 @@ function getFields() {
     .setName('Issues')
     .setType(types.NUMBER);
 
+  fields.newDimension()
+    .setId('parent_key')
+    .setName('Parent Key')
+    .setType(types.TEXT)
+
+  fields.newDimension()
+    .setId('parent_summary')
+    .setName('Parent Summary')
+    .setType(types.TEXT)
+
+  fields.newDimension()
+    .setId('parent_status')
+    .setName('Parent Status')
+    .setType(types.TEXT)
+
+  fields.newDimension()
+    .setId('parent_status_name')
+    .setName('Parent Status Name')
+    .setType(types.TEXT)
+
+  fields.newDimension()
+    .setId('parent_priority')
+    .setName('Parent Priority')
+    .setType(types.TEXT)
+
+  fields.newDimension()
+    .setId('parent_issuetype')
+    .setName('Parent Issue Type')
+    .setType(types.TEXT)
+  
+
   return fields;
 }
 
@@ -379,6 +416,24 @@ function responseToRows(requestedFields, issues) {
           break;
         case 'breachedtimeResolution':
           row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].breached: undefined: undefined );
+          break;
+        case 'parent_key':
+          row.push(issue.fields.parent? issue.fields.parent.key? issue.fields.parent.key : undefined : undefined);
+          break;
+        case 'parent_summary':
+          row.push(issue.fields.parent? issue.fields.parent.fields? issue.fields.parent.fields.summary? issue.fields.parent.fields.summary : undefined: undefined: undefined );
+          break;
+        case 'parent_status':
+          row.push(issue.fields.parent? issue.fields.parent.fields? issue.fields.parent.fields.status? issue.fields.parent.fields.status.statusCategory? issue.fields.parent.fields.status.statusCategory.name : undefined : undefined: undefined: undefined );
+          break;
+        case 'parent_status_name':
+          row.push(issue.fields.parent? issue.fields.parent.fields? issue.fields.parent.fields.status? issue.fields.parent.fields.status.name : undefined: undefined: undefined );
+          break;
+        case 'parent_priority':
+          row.push(issue.fields.parent? issue.fields.parent.fields? issue.fields.parent.fields.priority? issue.fields.parent.fields.priority.name : undefined: undefined: undefined );
+          break;
+        case 'parent_issuetype':
+          row.push(issue.fields.parent? issue.fields.parent.fields? issue.fields.parent.fields.issuetype? issue.fields.parent.fields.issuetype.name : undefined: undefined: undefined );
           break;
         default:
           row.push('');

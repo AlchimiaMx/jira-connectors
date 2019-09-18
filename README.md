@@ -42,6 +42,7 @@ For more information, you can consult the [community connector guide](https://de
 * breached first response
 * time to resolution
 * breached time resolution
+* parent (key, summary, status, status name, priority, issuetype)
 
 [jira software]: https://www.atlassian.com/software/jira
 [rest api jira]: https://developer.atlassian.com/cloud/jira/platform/rest/v2/
