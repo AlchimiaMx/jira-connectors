@@ -45,7 +45,15 @@ var fieldsDictionary = {
   'parent_status': 'parent',
   'parent_status_name': 'parent',
   'parent_priority' : 'parent',
-  'parent_issuetype': 'parent'
+  'parent_issuetype': 'parent',
+  'createdWorklogDayOfWeek': 'worklog',
+  'createdWorklogHour': 'worklog',
+  'createdWorklog': 'worklog',
+  'startedWorklogDayOfWeek': 'worklog',
+  'startedWorklogHour': 'worklog',
+  'startedWorklog': 'worklog',
+  'timespentUser': 'worklog',
+  'authorWorklog': 'worklog'
 }
 
 /**
@@ -96,6 +104,10 @@ function getConfig() {
     .setId('JQL')
     .setName('Jira Query Language (JQL)')
     .setPlaceholder('project = NAME');
+
+  config.newCheckbox()
+    .setId('worklogs')
+    .setName('Based on worklogs')
 
   config.newInfo()
     .setId('moreInfo')
@@ -291,7 +303,46 @@ function getFields() {
     .setId('parent_issuetype')
     .setName('Parent Issue Type')
     .setType(types.TEXT)
+
+  fields.newMetric()
+    .setId('timespentUser')
+    .setName('Time Spent (s) by worklogs')
+    .setType(types.DURATION);
   
+  fields.newDimension()
+    .setId('createdWorklog')
+    .setName('Created Worklog')
+    .setType(types.YEAR_MONTH_DAY);
+
+  fields.newDimension()
+    .setId('createdWorklogDayOfWeek')
+    .setName('Created Worklog (day of week)')
+    .setType(types.DAY_OF_WEEK);
+
+  fields.newDimension()
+    .setId('createdWorklogHour')
+    .setName('Created Worklog (hour)')
+    .setType(types.HOUR);
+
+  fields.newDimension()
+    .setId('startedWorklog')
+    .setName('Started Worklog')
+    .setType(types.YEAR_MONTH_DAY);
+
+  fields.newDimension()
+    .setId('startedWorklogDayOfWeek')
+    .setName('Started Worklog (day of week)')
+    .setType(types.DAY_OF_WEEK);
+
+  fields.newDimension()
+    .setId('startedWorklogHour')
+    .setName('Started Worklog (hour)')
+    .setType(types.HOUR);
+
+  fields.newDimension()
+    .setId('authorWorklog')
+    .setName('Author Worklog')
+    .setType(types.TEXT);
 
   return fields;
 }
@@ -435,6 +486,30 @@ function responseToRows(requestedFields, issues) {
         case 'parent_issuetype':
           row.push(issue.fields.parent? issue.fields.parent.fields? issue.fields.parent.fields.issuetype? issue.fields.parent.fields.issuetype.name : undefined: undefined: undefined );
           break;
+        case 'timespentUser':
+          row.push(issue.timeSpentSeconds? issue.timeSpentSeconds + '': undefined);
+          break;
+        case 'createdWorklog':
+          row.push(issue.created? formatTypeDate(issue.created) : undefined);
+          break;
+        case 'createdWorklogDayOfWeek':
+          row.push(issue.created? formatTypeDate(issue.created, 'u') : undefined);
+          break;
+        case 'createdWorklogHour':
+          row.push(issue.created? formatTypeDate(issue.created, 'HH') : undefined);
+          break;
+        case 'startedWorklog':
+          row.push(issue.created? formatTypeDate(issue.created) : undefined);
+          break;
+        case 'startedWorklogDayOfWeek':
+          row.push(issue.created? formatTypeDate(issue.created, 'u') : undefined);
+          break;
+        case 'startedWorklogHour':
+          row.push(issue.created? formatTypeDate(issue.created, 'HH') : undefined);
+          break;
+        case 'authorWorklog':
+          row.push(issue.author? issue.author.displayName: undefined)
+          break;
         default:
           row.push('');
       }
@@ -499,7 +574,7 @@ function getData(request) {
     return field.name;
   });
   var requestedFields = getFields().forIds(requestedFieldIds);
-  var fieldsToRequest = []
+  var fieldsToRequest = request.configParams.worklogs? ['worklog'] : []
   requestedFields.asArray().forEach(function (field) {
     if ( fieldsToRequest.indexOf( fieldsDictionary[field.getId()] == -1 ) ) {
       fieldsToRequest.push(fieldsDictionary[field.getId()])
@@ -510,6 +585,28 @@ function getData(request) {
     var responseFullIssues = getFullIssuesByAPI(fieldsToRequest, request, 0, []);
   } catch (e) {
     connector.throwError(e, true);
+  }
+
+  if (request.configParams.worklogs) {
+    try {
+      var unwind = responseFullIssues.map(function(issue){
+        if (issue.fields.worklog){
+          issue.fields.worklog.worklogs.map(function(worklog){
+            worklog.fields = issue.fields
+            worklog.key = issue.key
+            return worklog
+          });
+        } 
+        return issue
+      })
+      responseFullIssues = unwind.reduce(function(ac,cu){
+        if (cu.fields.worklog) return ac.concat(cu.fields.worklog.worklogs)
+        else return ac
+        
+      }, []);
+    } catch (e) {
+      connector.throwError(e, true);
+    }
   }
 
   try{
