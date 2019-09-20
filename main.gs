@@ -457,13 +457,13 @@ function responseToRows(requestedFields, issues) {
           row.push(1);
           break;
         case 'timeFirstResponse':
-          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  (Math.round(issue.fields.customfield_10208.completedCycles[0].elapsedTime.millis/1000)) +'': undefined: undefined );
+          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles? issue.fields.customfield_10208.completedCycles[0]?  (Math.round(issue.fields.customfield_10208.completedCycles[0].elapsedTime.millis/1000)) +'': undefined: undefined : undefined );
           break;
         case 'breachedFirstResponse':
-          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].breached: undefined: undefined );
+          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].breached: undefined: undefined: undefined );
           break;
         case 'timeResolution':
-          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  (Math.round(issue.fields.customfield_10207.completedCycles[0].elapsedTime.millis/1000)) +'' : undefined: undefined );
+          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles? issue.fields.customfield_10207.completedCycles[0]?  (Math.round(issue.fields.customfield_10207.completedCycles[0].elapsedTime.millis/1000)) +'' : undefined: undefined :undefined);
           break;
         case 'changeSatartDate':
           row.push(issue.fields.customfield_10214? formatTypeDate(issue.fields.customfield_10214): undefined);
@@ -472,7 +472,7 @@ function responseToRows(requestedFields, issues) {
           row.push(issue.fields.customfield_10215? formatTypeDate(issue.fields.customfield_10215): undefined);
           break;
         case 'breachedtimeResolution':
-          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].breached: undefined: undefined );
+          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].breached: undefined: undefined: undefined );
           break;
         case 'parent_key':
           row.push(issue.fields.parent? issue.fields.parent.key? issue.fields.parent.key : undefined : undefined);
