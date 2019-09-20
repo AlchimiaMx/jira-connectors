@@ -53,7 +53,8 @@ var fieldsDictionary = {
   'startedWorklogHour': 'worklog',
   'startedWorklog': 'worklog',
   'timespentUser': 'worklog',
-  'authorWorklog': 'worklog'
+  'authorWorklog': 'worklog',
+  'requestType':'customfield_10202'
 }
 
 /**
@@ -344,6 +345,11 @@ function getFields() {
     .setName('Author Worklog')
     .setType(types.TEXT);
 
+  fields.newDimension()
+    .setId('requestType')
+    .setName('Request Type')
+    .setType(types.TEXT);
+
   return fields;
 }
 
@@ -509,6 +515,9 @@ function responseToRows(requestedFields, issues) {
           break;
         case 'authorWorklog':
           row.push(issue.author? issue.author.displayName: undefined)
+          break;
+        case 'requestType':
+          row.push(issue.fields.customfield_10202? issue.fields.customfield_10202.requestType? issue.fields.customfield_10202.requestType.name : undefined : undefined )
           break;
         default:
           row.push('');
