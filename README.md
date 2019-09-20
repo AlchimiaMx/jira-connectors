@@ -45,6 +45,7 @@ For more information, you can consult the [community connector guide](https://de
 * breached time resolution
 * parent (key, summary, status, status name, priority, issuetype)
 * Worklogs (author, timespent, started, created)
+* requestType (for service desk)
 
 ### Based on worklogs
 It helps to obtain metrics about the time spent per user, regardless of whether more than one user collaborated on a task.

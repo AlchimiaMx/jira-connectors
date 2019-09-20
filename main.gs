@@ -53,7 +53,8 @@ var fieldsDictionary = {
   'startedWorklogHour': 'worklog',
   'startedWorklog': 'worklog',
   'timespentUser': 'worklog',
-  'authorWorklog': 'worklog'
+  'authorWorklog': 'worklog',
+  'requestType':'customfield_10202'
 }
 
 /**
@@ -344,6 +345,11 @@ function getFields() {
     .setName('Author Worklog')
     .setType(types.TEXT);
 
+  fields.newDimension()
+    .setId('requestType')
+    .setName('Request Type')
+    .setType(types.TEXT);
+
   return fields;
 }
 
@@ -451,13 +457,13 @@ function responseToRows(requestedFields, issues) {
           row.push(1);
           break;
         case 'timeFirstResponse':
-          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  (Math.round(issue.fields.customfield_10208.completedCycles[0].elapsedTime.millis/1000)) +'': undefined: undefined );
+          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles? issue.fields.customfield_10208.completedCycles[0]?  (Math.round(issue.fields.customfield_10208.completedCycles[0].elapsedTime.millis/1000)) +'': undefined: undefined : undefined );
           break;
         case 'breachedFirstResponse':
-          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].breached: undefined: undefined );
+          row.push(issue.fields.customfield_10208? issue.fields.customfield_10208.completedCycles? issue.fields.customfield_10208.completedCycles[0]?  issue.fields.customfield_10208.completedCycles[0].breached: undefined: undefined: undefined );
           break;
         case 'timeResolution':
-          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  (Math.round(issue.fields.customfield_10207.completedCycles[0].elapsedTime.millis/1000)) +'' : undefined: undefined );
+          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles? issue.fields.customfield_10207.completedCycles[0]?  (Math.round(issue.fields.customfield_10207.completedCycles[0].elapsedTime.millis/1000)) +'' : undefined: undefined :undefined);
           break;
         case 'changeSatartDate':
           row.push(issue.fields.customfield_10214? formatTypeDate(issue.fields.customfield_10214): undefined);
@@ -466,7 +472,7 @@ function responseToRows(requestedFields, issues) {
           row.push(issue.fields.customfield_10215? formatTypeDate(issue.fields.customfield_10215): undefined);
           break;
         case 'breachedtimeResolution':
-          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].breached: undefined: undefined );
+          row.push(issue.fields.customfield_10207? issue.fields.customfield_10207.completedCycles? issue.fields.customfield_10207.completedCycles[0]?  issue.fields.customfield_10207.completedCycles[0].breached: undefined: undefined: undefined );
           break;
         case 'parent_key':
           row.push(issue.fields.parent? issue.fields.parent.key? issue.fields.parent.key : undefined : undefined);
@@ -509,6 +515,9 @@ function responseToRows(requestedFields, issues) {
           break;
         case 'authorWorklog':
           row.push(issue.author? issue.author.displayName: undefined)
+          break;
+        case 'requestType':
+          row.push(issue.fields.customfield_10202? issue.fields.customfield_10202.requestType? issue.fields.customfield_10202.requestType.name : undefined : undefined )
           break;
         default:
           row.push('');
